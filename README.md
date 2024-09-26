@@ -65,31 +65,11 @@ Graylog convient bien aux petites et moyennes entreprises qui ont besoin d’une
 
 ---
 
-## 4. **Fluentd**
-
-### Description
-Fluentd est un outil flexible et léger pour la collecte et l'envoi de logs vers différents systèmes (Elasticsearch, Loki, etc.).
-
-### Avantages
-- Très flexible avec de nombreux plugins disponibles.
-- Facile à intégrer avec d’autres outils (Elasticsearch, Loki, etc.).
-- Léger et performant.
-
-### Inconvénients
-- Nécessite parfois un autre outil pour la visualisation (comme Grafana ou Kibana).
-- Peut devenir complexe à configurer avec des pipelines de traitement multiples.
-
-### Cas d'usage
-Fluentd est idéal pour des architectures distribuées où il faut envoyer des logs vers différents systèmes de stockage et visualisation.
-
----
-
 ## Conclusion
 
 - **ELK Stack** : solution complète mais gourmande en ressources.
 - **Loki + Grafana** : léger et simple, parfait pour des environnements Kubernetes.
 - **Graylog** : bonne alternative à ELK, plus simple d’utilisation.
-- **Fluentd** : flexible, idéal pour l’intégration avec d'autres outils.
 
 Chaque solution a ses forces et faiblesses, et le choix dépend des besoins spécifiques de l’entreprise ou du projet.
 
