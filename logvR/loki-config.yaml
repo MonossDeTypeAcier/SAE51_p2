@@ -9,9 +9,12 @@ ingester:
       kvstore:
         store: inmemory
       replication_factor: 1
-  chunk_idle_period: 5m
-  chunk_retain_period: 30s
-  max_transfer_retries: 0
+    chunk_idle_period: 5m
+    chunk_retain_period: 30s
+    max_transfer_retries: 0
+  wal:
+    enabled: true
+    dir: /wal  # Assurez-vous que /wal est correctement mappé dans docker-compose.yml
 
 schema_config:
   configs:

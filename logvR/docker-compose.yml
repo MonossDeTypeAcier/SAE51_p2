@@ -18,6 +18,8 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - ./loki-config.yaml:/etc/loki/local-config.yaml
+      - loki-data:/loki  # Volume pour les données Loki
+      - loki-wal:/wal      # Volume pour WAL
     ports:
       - "3100:3100"
     networks:
@@ -48,4 +50,8 @@ services:
 networks:
   loki-network:
     driver: bridge
+
+volumes:
+  loki-data:
+  loki-wal:
 
