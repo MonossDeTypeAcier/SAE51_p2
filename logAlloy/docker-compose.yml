@@ -47,15 +47,24 @@
      image: grafana/grafana:11.0.0
      ports:
        - "3000:3000"
-  alloy:
-    image: grafana/alloy:latest
-    ports:
-      - "12345:12345"  # Mappage du port hôte:conteneur
-    volumes:
-      - config.alloy:/etc/alloy/config.alloy  # Montage du fichier de configuration
-    command: >
-      run --server.http.listen-addr=0.0.0.0:12345 
-      --storage.path=/var/lib/alloy/data 
-      /etc/alloy/config.alloy
-
-    	
+   alloy:
+     image: grafana/alloy:latest
+     ports:
+       - "12345:12345"  # Mappage du port hôte:conteneur
+     volumes:
+       - ./config.alloy:/etc/alloy/config.alloy  # Montage du fichier de configuration
+       - shared-volume:/var/log/
+     command: >
+       run --server.http.listen-addr=0.0.0.0:12345 
+       --storage.path=/var/lib/alloy/data 
+       /etc/alloy/config.alloy
+   nginx:
+     image: nginx:latest
+     ports: 
+       - "8080:80"
+     volumes:
+       - /root/SAE51_p2/logAlloy/:/etc/nginx/
+       - shared-volume:/var/log/
+ volumes:
+   shared-volume:
+     driver: local
