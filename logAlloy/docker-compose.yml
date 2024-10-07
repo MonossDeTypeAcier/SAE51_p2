@@ -64,7 +64,7 @@
        - "8080:80"
      volumes:
        - /root/SAE51_p2/logAlloy/:/etc/nginx/
-       - shared-volume:/var/log/
+       - shared-volume:/var/log/nginx/
  volumes:
    shared-volume:
      driver: local
