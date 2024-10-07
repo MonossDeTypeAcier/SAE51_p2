@@ -5,13 +5,6 @@
      ports:
        - "3100:3100"
      command: -config.file=/etc/loki/local-config.yaml
-   prometheus:
-     image: prom/prometheus:v2.47.0
-     command:
-       - --web.enable-remote-write-receiver
-       - --config.file=/etc/prometheus/prometheus.yml
-     ports:
-       - "9090:9090"
    grafana:
      environment:
        - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
