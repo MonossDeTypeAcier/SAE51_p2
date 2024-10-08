@@ -1,85 +1,121 @@
-# Projet de Collecte de Logs - SAE51
+# Documentation du Projet de Collecte de Logs - SAE51
 
 ## Introduction
 
-Ce projet vise à mettre en place une infrastructure de collecte de logs via Docker. Les composants principaux incluent **Loki** pour la centralisation des logs, **Alloy** pour la collecte, **Grafana** pour la visualisation, et **Nginx** comme serveur web générant des logs d'accès et d'erreurs. L'objectif est de collecter, filtrer et visualiser les logs d'erreurs et de connexion provenant de divers services.
+La gestion et l'analyse des logs sont des enjeux critiques pour le suivi des performances, l'identification d'erreurs, et la sécurisation des systèmes. Ce projet a pour but de mettre en place une infrastructure modulaire et performante pour la collecte, la centralisation, le filtrage, et la visualisation des logs. Cette infrastructure repose sur **Nginx**, **Alloy**, **Loki**, et **Grafana**, orchestrés via **Docker Compose**. 
 
-## Architecture
+### Objectifs du Projet
 
-L'architecture repose sur 4 services principaux exécutés dans des conteneurs Docker, gérés via un fichier `docker-compose.yml` :
+L’objectif principal est de récolter, filtrer et analyser les **logs d'accès et d'erreurs** des applications et des services. Le projet vise à :
+1. **Collecter les logs** générés par des services comme Nginx.
+2. **Centraliser et filtrer** les logs afin d’éliminer les informations superflues.
+3. **Visualiser les logs** dans une interface web intuitive pour analyser les tendances et détecter des anomalies ou des erreurs.
 
-1. **Nginx** : Sert de serveur web simple, générant des logs d'accès et d'erreurs.
-2. **Alloy** : Outil de collecte de logs configuré pour surveiller et capturer les logs des fichiers locaux.
-3. **Loki** : Centralise les logs collectés par Alloy.
-4. **Grafana** : Interface de visualisation des logs collectés et stockés dans Loki.
+### Cas d'Usage
 
-### Docker Compose
+Ce projet est particulièrement adapté pour :
+- Le suivi des erreurs d'authentification, de connexion, ou d'accès à un service.
+- La surveillance de la performance du serveur en temps réel.
+- La gestion des événements critiques dans une infrastructure distribuée.
 
-Le fichier `docker-compose.yml` décrit l'orchestration des conteneurs, les volumes partagés et la configuration de chaque service.
+## Architecture du Système
 
-## Détails des services
+### Schéma de l'Architecture
 
-### 1. **Nginx**
+```
+   ┌─────────┐       ┌────────┐      ┌───────┐      ┌─────────┐
+   │  Nginx  │  ───► │  Alloy │ ──►  │ Loki  │ ──►  │ Grafana │
+   └─────────┘       └────────┘      └───────┘      └─────────┘
+     Génère des       Collecte et    Centralise et   Visualise les
+    logs d'accès      filtre les        stocke         logs via
+    et d'erreurs        logs           les logs      une interface
+                                                   graphique web.
+```
 
-- **Objectif** : Fournir un serveur web générant des logs d'accès et d'erreurs.
-- **Logs** : 
-  - `access.log` : Journal des accès HTTP.
-  - `error.log` : Journal des erreurs du serveur.
+### Fonctionnement Global
 
-Le fichier `nginx.conf` configure les journaux de manière à capturer des informations pertinentes, comme les temps de réponse et les erreurs, dans `/var/log/nginx/`.
+1. **Nginx** génère des logs d'accès et d'erreurs à chaque requête HTTP ou anomalie.
+2. **Alloy** surveille les fichiers de logs créés par Nginx, les collecte, et applique des filtres pour éliminer les informations inutiles.
+3. **Loki** centralise les logs envoyés par Alloy, les indexe, et les rend disponibles pour consultation.
+4. **Grafana** se connecte à Loki pour offrir une interface de visualisation des logs collectés, permettant d’exécuter des requêtes et de créer des tableaux de bord personnalisés.
 
-### 2. **Alloy**
+### Pourquoi ces Outils ?
 
-- **Objectif** : Collecter les logs générés par Nginx.
-- **Configuration** : 
-  - `config.alloy` : Définit les cibles à surveiller (fichiers de logs dans `/var/log/nginx/`) et les étapes de traitement.
-  - **File Matching** : Capture les fichiers `*.log` dans le dossier `/var/log/`.
-  - **Filtrage** : Nous avons configuré un filtre pour ignorer les logs liés à "Connection closed by authenticating user root", afin de supprimer les logs inutiles.
+- **Nginx** : Serveur web open-source performant et très répandu, utilisé pour héberger des sites web et générer des logs HTTP pertinents.
+- **Alloy** : Outil de collecte de logs léger et efficace, conçu pour s’intégrer parfaitement à Grafana et Loki, capable de filtrer les logs à la source pour éliminer le bruit.
+- **Loki** : Système de gestion de logs scalables conçu par Grafana Labs, qui centralise les logs et permet de les stocker efficacement, tout en étant optimisé pour fonctionner avec Grafana.
+- **Grafana** : Interface de visualisation populaire et extensible, permettant de visualiser les logs et les métriques, créer des alertes, et configurer des tableaux de bord en temps réel.
 
-Alloy lit les logs et les transmet à Loki après filtrage.
+## Détails des Composants et Configurations
 
-### 3. **Loki**
+### 1. **Nginx** (Génération des logs)
 
-- **Objectif** : Centraliser et stocker les logs envoyés par Alloy.
-- **Configuration** : 
-  - `loki.config.yaml` : Configure Loki pour stocker les logs dans un stockage local, avec une période de rétention et des configurations pour le partitionnement des logs (`chunks`).
-  - **Porte d'écoute** : Loki est exposé sur le port `3100`.
-  
-Loki reçoit les logs d'Alloy, les indexe et les stocke pour une visualisation future via Grafana.
+**Nginx** est utilisé comme serveur web générant des **logs d'accès** et des **logs d'erreurs** à chaque requête ou incident. Il est configuré pour stocker ces logs dans des fichiers locaux accessibles à Alloy.
 
-### 4. **Grafana**
+- **Logs d'accès (`access.log`)** : Contient des informations sur les requêtes HTTP, y compris les adresses IP des clients, les réponses du serveur (codes d'état HTTP), le volume des données transférées, etc.
+- **Logs d'erreurs (`error.log`)** : Contient les erreurs relatives au serveur web, par exemple des échecs de connexion ou des problèmes de configuration.
 
-- **Objectif** : Visualiser les logs stockés dans Loki.
-- **Configuration** :
-  - Grafana est configuré pour se connecter à Loki en tant que source de données par défaut via le fichier `docker-compose.yml`.
-  - **Provisionnement des Datasources** : Un fichier de configuration est automatiquement généré pour provisionner Loki et Prometheus en tant que sources de données.
+Les logs sont formatés de manière personnalisée dans le fichier `nginx.conf` pour inclure des détails supplémentaires comme les temps de réponse (`$request_time`), le temps de connexion à l'upstream (`$upstream_connect_time`), et d’autres informations utiles pour diagnostiquer les problèmes de performance.
 
-### Volumes
+#### Avantages de Nginx
+- **Performance** : Nginx est reconnu pour sa faible consommation de ressources et sa capacité à gérer un grand nombre de connexions simultanées.
+- **Logs riches** : La flexibilité de la configuration des logs permet de capturer une variété d'informations détaillées.
 
-Les logs de Nginx sont partagés entre les conteneurs Nginx et Alloy via un volume Docker (`shared-volume`). Cela permet à Alloy de collecter les logs sans nécessiter de configuration complexe de partage de fichiers.
+### 2. **Alloy** (Collecte et Filtrage des logs)
 
-## Fichiers de configuration
+**Alloy** est utilisé pour **collecter les logs** générés par Nginx. Il est configuré pour surveiller le répertoire où Nginx écrit ses logs et pour les transmettre à Loki après avoir appliqué des filtres.
 
-### 1. **config.alloy**
+- **File Matching** : Alloy est configuré pour surveiller tous les fichiers se terminant par `.log` dans le répertoire `/var/log/nginx/`.
+- **Filtrage des Logs** : Alloy utilise un filtre pour ignorer les logs qui ne sont pas pertinents, comme les erreurs "Connection closed by authenticating user root", afin de limiter le bruit dans les logs et se concentrer sur les événements importants.
 
-Le fichier `config.alloy` configure Alloy pour lire les fichiers de logs de Nginx et filtrer les lignes inutiles avant de les envoyer à Loki.
+#### Avantages d'Alloy
+- **Filtrage à la source** : Permet de réduire le volume des logs envoyés à Loki en filtrant les événements inutiles.
+- **Intégration naturelle avec Loki et Grafana** : Conçu pour fonctionner sans effort avec ces outils, facilitant la mise en place d'une pipeline de logs complète.
 
+### 3. **Loki** (Centralisation et Stockage des logs)
 
-### 2. **docker-compose.yml**
+**Loki** est un **système de gestion des logs** qui indexe les logs collectés par Alloy et les stocke dans un système de fichiers. Il permet une **recherche efficace** des logs, similaire à des solutions comme **Elasticsearch**, mais sans les exigences en matière de gestion des index complexes.
 
-Le fichier `docker-compose.yml` gère l'orchestration des services via Docker. Chaque service est configuré pour se lancer avec les bonnes dépendances et options.
+#### Configuration de Loki
+- **Rétention des Logs** : La rétention des logs est configurée dans `loki.config.yaml` pour permettre un stockage optimisé des logs, avec un partitionnement (`chunking`) pour faciliter l’archivage et l'accès rapide aux logs.
+- **Indexation Légère** : Contrairement à d’autres systèmes de gestion de logs comme Elastic, Loki n’indexe que les métadonnées des logs, ce qui réduit l'espace disque et les ressources nécessaires.
 
+#### Avantages de Loki
+- **Scalabilité** : Loki est conçu pour gérer de gros volumes de logs tout en restant performant.
+- **Coût d’indexation réduit** : En n’indexant que les métadonnées, Loki est plus économe en termes de stockage et de performance par rapport à d'autres solutions comme ELK (Elasticsearch, Logstash, Kibana).
 
-### 3. **loki.config.yaml**
+### 4. **Grafana** (Visualisation des logs)
 
-Ce fichier configure Loki pour la gestion des logs, y compris le stockage sur le système de fichiers local.
+**Grafana** est l’outil de visualisation utilisé pour **interroger** et **analyser** les logs stockés dans Loki. Grâce à ses puissantes fonctionnalités de tableau de bord, il permet de **créer des visualisations** claires des logs en fonction de divers critères (période de temps, sources, types d’erreurs).
 
+#### Configuration de Grafana
+- **Provisionnement des Datasources** : Grafana est automatiquement configuré pour se connecter à Loki grâce à un fichier de provisionnement généré dans `docker-compose.yml`. Cela permet à Grafana d'accéder immédiatement aux logs collectés.
+- **Dashboards** : Il est possible de configurer des tableaux de bord qui suivent les erreurs HTTP, les temps de réponse des requêtes, et les incidents critiques.
 
-### 4. **nginx.conf**
+#### Avantages de Grafana
+- **Interface intuitive** : Fournit une interface web puissante pour la visualisation en temps réel.
+- **Alertes** : Permet de configurer des alertes basées sur des conditions spécifiques trouvées dans les logs (erreurs critiques, pics de latence, etc.).
 
-Ce fichier configure les journaux d'erreurs et d'accès pour Nginx.
+### 5. **Docker Compose** (Orchestration)
 
+L'infrastructure est orchestrée à l'aide de **Docker Compose**, ce qui permet de gérer facilement les services, leurs dépendances, et leur configuration respective. Le fichier `docker-compose.yml` définit :
+- **Les services** : Nginx, Alloy, Loki, et Grafana.
+- **Les volumes partagés** : Utilisés pour permettre à Alloy d'accéder aux logs générés par Nginx.
+- **Les ports exposés** : Chaque service expose des ports spécifiques pour l’interaction externe (Nginx sur 8080, Loki sur 3100, Grafana sur 3000).
+
+## Justifications Techniques
+
+### Pourquoi ne pas utiliser une pile ELK (Elasticsearch, Logstash, Kibana) ?
+Bien que la pile ELK soit une solution populaire pour
+
+ la gestion de logs, Loki offre des avantages considérables en termes de simplicité et de performance :
+- **Loki n'indexe pas les logs** eux-mêmes mais uniquement leurs métadonnées, ce qui réduit considérablement les besoins en ressources.
+- **L'intégration avec Grafana** est native, facilitant la mise en place rapide d’une solution de visualisation performante.
+- **Simplicité de configuration** : La configuration de Loki et Alloy est bien plus légère que celle de Logstash et Elasticsearch.
 
 ## Conclusion
 
-Ce projet met en œuvre une solution complète de collecte et d'analyse des logs, en utilisant des outils modernes comme **Alloy**, **Loki**, et **Grafana**, orchestrés via Docker. Nginx génère les logs, Alloy les collecte et filtre, Loki les centralise, et Grafana permet une visualisation facile des événements. Cette architecture permet de surveiller efficacement les erreurs et les connexions de manière automatisée.
+Cette infrastructure fournit une solution complète, scalable, et performante pour la gestion et la visualisation des logs. En combinant Nginx pour la génération des logs, Alloy pour leur collecte et filtrage, Loki pour leur stockage et indexation, et Grafana pour leur visualisation, ce système permet d'obtenir une vision claire et actionnable des événements qui surviennent au sein de l'infrastructure.
+
+Cette architecture est idéale pour surveiller des systèmes critiques, gérer des alertes et diagnostiquer des problèmes de performance ou de sécurité en temps réel.
+
