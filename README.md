@@ -27,7 +27,7 @@ L'ELK Stack est bien adaptée aux entreprises qui ont besoin de gérer de grands
 
 ---
 
-## 2. **Loki + Promtail + Grafana**
+## 2. **Loki + Promtail ou Alloy + Grafana**
 
 ### Description
 Loki est un système léger de gestion des logs, souvent utilisé avec Promtail (pour la collecte) et Grafana (pour la visualisation).
