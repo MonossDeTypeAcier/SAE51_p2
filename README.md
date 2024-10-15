@@ -73,3 +73,38 @@ Graylog convient bien aux petites et moyennes entreprises qui ont besoin d’une
 
 Chaque solution a ses forces et faiblesses, et le choix dépend des besoins spécifiques de l’entreprise ou du projet.
 
+
+---
+
+# Tutoriel du fonctionnement de projet
+
+## Initialisation 
+
+Pour commencer, il suffit de cloner le dépôt, puis de changer le chemin du bind mount de Nginx, dans le fichiers docker-compose.yml, qui est le seul avec un chemin absolu. Ensuite, il suffit de lancer un simple "docker-compose up" (il est possible qu'il soit nécessaire de modifier la version de Docker Compose au début du fichier) dans le dossier logAlloy.
+
+
+## Lancement 
+
+
+Ce fichier Docker Compose permet de démarrer 4 conteneurs : un conteneur Nginx, un conteneur Alloy, un conteneur Loki et un conteneur Grafana.
+
+Avec la commande "docker ps", on peut vérifier que les 4 conteneurs fonctionnent correctement.
+
+- Sur 127.0.0.1:8080, on accède à la page Nginx (ici la page par défaut).
+- Sur 127.0.0.1:12345, on accède à l'interface d'Alloy, qui affiche la connectivité avec Loki.
+- Sur 127.0.0.1:3100, Loki n'ayant pas d'interface graphique, il n'y a rien d'affiché sur ce port.
+- Sur 127.0.0.1:3000, on accède à l'interface de Grafana, qui permet d'afficher les données sur un tableau de bord (créé ou importé), ou tout simplement d'afficher le résultat d'une requête via la page Explore.
+
+## Test du fonctionnement
+
+Pour tester notre solution, on peut aller sur la page ** Explore ** de Grafana, sélectionner la ** source de données ** Loki et effectuer la requête suivante :
+
+- {filename="/var/log/access.log"}
+
+Il suffit ensuite de cliquer sur le bouton Live pour afficher les requêtes en temps réel, puis de se connecter à la page Nginx (127.0.0.1:8080). Si l'installation fonctionne correctement, des logs devraient apparaître sur l'interface.
+
+---
+
+# Conclusion sur cette partie de la SAE
+
+Ce projet nous a mis en difficulté en raison du manque de documentation sur la solution que nous avions choisie. Nous pensions qu'en suivant des tutoriels, tout fonctionnerait directement, mais comme notre architecture différait de celle du tutoriel (qui utilisait Alloy sur la machine hôte et non sur un conteneur), nous avons dû nous adapter. Après avoir résolu divers petits problèmes ici et là, nous avons finalement abouti à un projet fonctionnel, sur lequel il est possible de générer les logs souhaités et d'ajouter des machines assez facilement.
