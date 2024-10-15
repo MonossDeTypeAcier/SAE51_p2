@@ -119,31 +119,3 @@ Cette infrastructure est une "POC" qui fournit une solution scalable, et perform
 Cette architecture est idéale pour surveiller des systèmes critiques, gérer des alertes et diagnostiquer des problèmes de performance ou de sécurité en temps réel.
 Ce projet est une bonne base pour centraliser et afficher les logs de toutes les machines d'un réseau, il suffira juste de créer ou importé un dashboard adapté sur Grafana. 
 
----
-
-# Tutoriel
-
-## Initialisation 
-
-Pour commencer, il suffit de cloner le dépôt, puis de changer le chemin du bind mount de Nginx, dans le fichiers docker-compose.yml, qui est le seul avec un chemin absolu. Ensuite, il suffit de lancer un simple "docker-compose up" (il est possible qu'il soit nécessaire de modifier la version de Docker Compose au début du fichier).
-
-
-## Lancement 
-
-
-Ce fichier Docker Compose permet de démarrer 4 conteneurs : un conteneur Nginx, un conteneur Alloy, un conteneur Loki et un conteneur Grafana.
-
-Avec la commande "docker ps", on peut vérifier que les 4 conteneurs fonctionnent correctement.
-
-- Sur 127.0.0.1:8080, on accède à la page Nginx (ici la page par défaut).
-- Sur 127.0.0.1:12345, on accède à l'interface d'Alloy, qui affiche la connectivité avec Loki.
-- Sur 127.0.0.1:3100, Loki n'ayant pas d'interface graphique, il n'y a rien d'affiché sur ce port.
-- Sur 127.0.0.1:3000, on accède à l'interface de Grafana, qui permet d'afficher les données sur un tableau de bord (créé ou importé), ou tout simplement d'afficher le résultat d'une requête via la page Explore.
-
-## Test du fonctionnement
-
-Pour tester notre solution, on peut aller sur la page ** Explore ** de Grafana, sélectionner la ** source de données ** Loki et effectuer la requête suivante :
-
-- {filename="/var/log/access.log"}
-
-Il suffit ensuite de cliquer sur le bouton Live pour afficher les requêtes en temps réel, puis de se connecter à la page Nginx (127.0.0.1:8080). Si l'installation fonctionne correctement, des logs devraient apparaître sur l'interface.
