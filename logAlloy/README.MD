@@ -130,18 +130,20 @@ Pour commencer, il suffit de cloner le dépôt, puis de changer le chemin du bin
 
 ## Lancement 
 
-Ce docker compose permet de démarrer 4 conteneurs, 1 conteneur nginx, 1 conteneur Alloy, 1 conteneur Loki et 1 conteneur Grafana. 
 
-Grâce à "docker ps", on peut vérifier que les 4 sont bien en fonctionnement.
+Ce fichier Docker Compose permet de démarrer 4 conteneurs : un conteneur Nginx, un conteneur Alloy, un conteneur Loki et un conteneur Grafana.
 
-- 127.0.0.1:8080, on a accès à la page Nginx (ici la page par défaut).
-- 127.0.0.1:12345, on a accès à l'interface de Alloy, qui affiche la connectivité avec Loki.
-- 127.0.0.1:3100, Loki n'ayant pas d'interface grafique, on n'affiche rien sur son port.
-- 127.0.0.1:3000, on a accès à l'interface de Grafana, qui permet d'afficher les données sur un dashboard (créé ou importé), ou tout simplement les afficher le résultat de requête, via la page explore.
+Avec la commande "docker ps", on peut vérifier que les 4 conteneurs fonctionnent correctement.
+
+    Sur 127.0.0.1:8080, on accède à la page Nginx (ici la page par défaut).
+    Sur 127.0.0.1:12345, on accède à l'interface d'Alloy, qui affiche la connectivité avec Loki.
+    Sur 127.0.0.1:3100, Loki n'ayant pas d'interface graphique, il n'y a rien d'affiché sur ce port.
+    Sur 127.0.0.1:3000, on accède à l'interface de Grafana, qui permet d'afficher les données sur un tableau de bord (créé ou importé), ou tout simplement d'afficher le résultat d'une requête via la page Explore.
 
 ## Test du fonctionnement
 
-Pour tester le fonctionnement de notre solution, on peut aller sur la page **Explore** sur Grafana, selectionner la ** source de données ** (Data source) ** Loki ** et faire la requête suivante :
-- {filename="/var/log/access.log}
-On a plus qu'à cliquer sur le bouton ** Live **, pour afficher les requêtes en temps réel et se connecter à la pâge Nginx (127.0.0.1:8080).
-Si l'installation est fonctionnelle, des logs devraient apparaître sur l'interface.
+Pour tester notre solution, on peut aller sur la page ** Explore ** de Grafana, sélectionner la ** source de données ** Loki et effectuer la requête suivante :
+
+- {filename="/var/log/access.log"}
+
+Il suffit ensuite de cliquer sur le bouton Live pour afficher les requêtes en temps réel, puis de se connecter à la page Nginx (127.0.0.1:8080). Si l'installation fonctionne correctement, des logs devraient apparaître sur l'interface.
