@@ -135,10 +135,10 @@ Ce fichier Docker Compose permet de démarrer 4 conteneurs : un conteneur Nginx,
 
 Avec la commande "docker ps", on peut vérifier que les 4 conteneurs fonctionnent correctement.
 
-    Sur 127.0.0.1:8080, on accède à la page Nginx (ici la page par défaut).
-    Sur 127.0.0.1:12345, on accède à l'interface d'Alloy, qui affiche la connectivité avec Loki.
-    Sur 127.0.0.1:3100, Loki n'ayant pas d'interface graphique, il n'y a rien d'affiché sur ce port.
-    Sur 127.0.0.1:3000, on accède à l'interface de Grafana, qui permet d'afficher les données sur un tableau de bord (créé ou importé), ou tout simplement d'afficher le résultat d'une requête via la page Explore.
+- Sur 127.0.0.1:8080, on accède à la page Nginx (ici la page par défaut).
+- Sur 127.0.0.1:12345, on accède à l'interface d'Alloy, qui affiche la connectivité avec Loki.
+- Sur 127.0.0.1:3100, Loki n'ayant pas d'interface graphique, il n'y a rien d'affiché sur ce port.
+- Sur 127.0.0.1:3000, on accède à l'interface de Grafana, qui permet d'afficher les données sur un tableau de bord (créé ou importé), ou tout simplement d'afficher le résultat d'une requête via la page Explore.
 
 ## Test du fonctionnement
 
