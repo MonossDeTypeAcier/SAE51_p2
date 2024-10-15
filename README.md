@@ -97,7 +97,7 @@ Avec la commande "docker ps", on peut vérifier que les 4 conteneurs fonctionnen
 
 ## Test du fonctionnement
 
-Pour tester notre solution, on peut aller sur la page ** Explore ** de Grafana, sélectionner la ** source de données ** Loki et effectuer la requête suivante :
+Pour tester notre solution, on peut aller sur la page **Explore** de Grafana, sélectionner la **source de données** Loki et effectuer la requête suivante :
 
 - {filename="/var/log/access.log"}
 
