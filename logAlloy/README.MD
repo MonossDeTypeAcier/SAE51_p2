@@ -115,7 +115,33 @@ Bien que la pile ELK soit une solution populaire pour
 
 ## Conclusion
 
-Cette infrastructure fournit une solution complète, scalable, et performante pour la gestion et la visualisation des logs. En combinant Nginx pour la génération des logs, Alloy pour leur collecte et filtrage, Loki pour leur stockage et indexation, et Grafana pour leur visualisation, ce système permet d'obtenir une vision claire et actionnable des événements qui surviennent au sein de l'infrastructure.
-
+Cette infrastructure est une "POC" qui fournit une solution scalable, et performante pour la gestion et la visualisation des logs. En combinant Nginx pour la génération des logs, Alloy pour leur collecte et filtrage, Loki pour leur stockage et indexation, et Grafana pour leur visualisation, ce système permet d'obtenir une vision claire et actionnable des événements qui surviennent au sein de l'infrastructure. 
 Cette architecture est idéale pour surveiller des systèmes critiques, gérer des alertes et diagnostiquer des problèmes de performance ou de sécurité en temps réel.
+Ce projet est une bonne base pour centraliser et afficher les logs de toutes les machines d'un réseau, il suffira juste de créer ou importé un dashboard adapté sur Grafana. 
 
+---
+
+# Tutoriel
+
+## Initialisation 
+
+Pour commencer, il suffit de cloner le dépôt, puis de changer le chemin du bind mount de Nginx, dans le fichiers docker-compose.yml, qui est le seul avec un chemin absolu. Ensuite, il suffit de lancer un simple "docker-compose up" (il est possible qu'il soit nécessaire de modifier la version de Docker Compose au début du fichier).
+
+
+## Lancement 
+
+Ce docker compose permet de démarrer 4 conteneurs, 1 conteneur nginx, 1 conteneur Alloy, 1 conteneur Loki et 1 conteneur Grafana. 
+
+Grâce à "docker ps", on peut vérifier que les 4 sont bien en fonctionnement.
+
+- 127.0.0.1:8080, on a accès à la page Nginx (ici la page par défaut).
+- 127.0.0.1:12345, on a accès à l'interface de Alloy, qui affiche la connectivité avec Loki.
+- 127.0.0.1:3100, Loki n'ayant pas d'interface grafique, on n'affiche rien sur son port.
+- 127.0.0.1:3000, on a accès à l'interface de Grafana, qui permet d'afficher les données sur un dashboard (créé ou importé), ou tout simplement les afficher le résultat de requête, via la page explore.
+
+## Test du fonctionnement
+
+Pour tester le fonctionnement de notre solution, on peut aller sur la page **Explore** sur Grafana, selectionner la ** source de données ** (Data source) ** Loki ** et faire la requête suivante :
+- {filename="/var/log/access.log}
+On a plus qu'à cliquer sur le bouton ** Live **, pour afficher les requêtes en temps réel et se connecter à la pâge Nginx (127.0.0.1:8080).
+Si l'installation est fonctionnelle, des logs devraient apparaître sur l'interface.
